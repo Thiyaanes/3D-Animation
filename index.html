@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="3D Model to Animation Agent - Animate your 3D models using text prompts.">
+    <title>3D Animation Agent</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/fix.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <div class="loader-cube">
+                <div class="face front"></div>
+                <div class="face back"></div>
+                <div class="face right"></div>
+                <div class="face left"></div>
+                <div class="face top"></div>
+                <div class="face bottom"></div>
+            </div>
+        </div>
+        <p class="loading-text">Initializing 3D Engine...</p>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <span>3D Animation Agent</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link active"><i class="fas fa-magic"></i> Animate</a>
+                <a href="#" class="nav-link"><i class="fas fa-download"></i> Export</a>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- 3D Viewport -->
+            <div class="viewport-container">
+                <canvas id="three-canvas"></canvas>
+                <div class="viewport-controls">
+                    <button id="btn-reset-camera" class="viewport-btn" title="Reset Camera">
+                        <i class="fas fa-crosshairs"></i>
+                    </button>
+                    <button id="btn-fullscreen" class="viewport-btn" title="Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button id="btn-grid-toggle" class="viewport-btn active" title="Toggle Grid">
+                        <i class="fas fa-border-all"></i>
+                    </button>
+                </div>
+                <div id="recording-indicator" class="recording-indicator hidden">
+                    <span class="rec-dot"></span>
+                    <span>Recording...</span>
+                    <span id="rec-timer">00:00</span>
+                </div>
+                <div id="empty-state" class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-cube"></i></div>
+                    <h2>No Model Loaded</h2>
+                    <p>Upload a 3D model or click a sample</p>
+                </div>
+            </div>
+
+            <!-- Control Sidebar -->
+            <aside class="sidebar">
+                <!-- Upload Section -->
+                <section class="panel upload-panel">
+                    <div class="panel-header">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Upload Model</h3>
+                    </div>
+                    <div class="panel-content">
+                        <input type="file" id="file-input" accept=".glb,.gltf,.obj" style="display:none;">
+                        <label for="file-input" id="drop-zone" class="drop-zone">
+                            <div class="drop-zone-content">
+                                <i class="fas fa-file-upload"></i>
+                                <p>Drag & drop your 3D model</p>
+                                <span>or click to browse</span>
+                            </div>
+                        </label>
+                        <div id="model-info" class="model-info hidden">
+                            <div class="model-name">
+                                <i class="fas fa-cube"></i>
+                                <span id="loaded-model-name">model.glb</span>
+                            </div>
+                            <button id="btn-remove-model" class="btn-icon"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="sample-models">
+                            <p class="sample-label">Or try a sample:</p>
+                            <div class="sample-btns">
+                                <button class="sample-btn" data-model="cube"><i class="fas fa-cube"></i> Cube</button>
+                                <button class="sample-btn" data-model="sphere"><i class="fas fa-circle"></i>
+                                    Sphere</button>
+                                <button class="sample-btn" data-model="torus"><i class="fas fa-ring"></i> Torus</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Animation Section -->
+                <section class="panel animation-panel">
+                    <div class="panel-header">
+                        <i class="fas fa-magic"></i>
+                        <h3>Animation</h3>
+                    </div>
+                    <div class="panel-content">
+                        <!-- Prompt Input -->
+                        <div class="prompt-group">
+                            <label>Animation Prompt</label>
+                            <div class="prompt-input-wrapper">
+                                <input type="text" id="animation-prompt" placeholder='Type any animation...'>
+                                <button id="btn-apply-animation" class="btn-apply"><i class="fas fa-play"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Animation Categories -->
+                        <div class="animation-categories">
+                            <label>Choose Type:</label>
+                            <div class="category-tabs">
+                                <button class="category-tab active" data-category="basic">
+                                    <i class="fas fa-sync-alt"></i> Basic
+                                </button>
+                                <button class="category-tab" data-category="character">
+                                    <i class="fas fa-walking"></i> Character
+                                </button>
+                                <button class="category-tab" data-category="effects">
+                                    <i class="fas fa-magic"></i> Effects
+                                </button>
+                                <button class="category-tab" data-category="special">
+                                    <i class="fas fa-star"></i> Special
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Animation Buttons by Category -->
+                        <div class="animation-buttons">
+                            <!-- Basic Category -->
+                            <div class="category-content active" data-category="basic">
+                                <div class="preset-grid">
+                                    <button class="preset-btn" data-animation="rotate"><i
+                                            class="fas fa-sync-alt"></i><span>Rotate</span></button>
+                                    <button class="preset-btn" data-animation="spin"><i
+                                            class="fas fa-redo"></i><span>Spin</span></button>
+                                    <button class="preset-btn" data-animation="bounce"><i
+                                            class="fas fa-arrow-up"></i><span>Bounce</span></button>
+                                    <button class="preset-btn" data-animation="float"><i
+                                            class="fas fa-feather"></i><span>Float</span></button>
+                                    <button class="preset-btn" data-animation="pulse"><i
+                                            class="fas fa-heartbeat"></i><span>Pulse</span></button>
+                                    <button class="preset-btn" data-animation="shake"><i
+                                            class="fas fa-hand-paper"></i><span>Shake</span></button>
+                                    <button class="preset-btn" data-animation="wave"><i
+                                            class="fas fa-water"></i><span>Wave</span></button>
+                                    <button class="preset-btn" data-animation="swing"><i
+                                            class="fas fa-bezier-curve"></i><span>Swing</span></button>
+                                </div>
+                            </div>
+                            <!-- Character Category -->
+                            <div class="category-content" data-category="character">
+                                <div class="preset-grid">
+                                    <button class="preset-btn" data-animation="walk"><i
+                                            class="fas fa-walking"></i><span>Walk</span></button>
+                                    <button class="preset-btn" data-animation="run"><i
+                                            class="fas fa-running"></i><span>Run</span></button>
+                                    <button class="preset-btn" data-animation="dance"><i
+                                            class="fas fa-music"></i><span>Dance</span></button>
+                                    <button class="preset-btn" data-animation="jump"><i
+                                            class="fas fa-level-up-alt"></i><span>Jump</span></button>
+                                    <button class="preset-btn" data-animation="hop"><i
+                                            class="fas fa-frog"></i><span>Hop</span></button>
+                                    <button class="preset-btn" data-animation="march"><i
+                                            class="fas fa-shoe-prints"></i><span>March</span></button>
+                                    <button class="preset-btn" data-animation="strut"><i
+                                            class="fas fa-user"></i><span>Strut</span></button>
+                                    <button class="preset-btn" data-animation="sway"><i
+                                            class="fas fa-leaf"></i><span>Sway</span></button>
+                                </div>
+                            </div>
+                            <!-- Effects Category -->
+                            <div class="category-content" data-category="effects">
+                                <div class="preset-grid">
+                                    <button class="preset-btn" data-animation="breathe"><i
+                                            class="fas fa-lungs"></i><span>Breathe</span></button>
+                                    <button class="preset-btn" data-animation="heartbeat"><i
+                                            class="fas fa-heart"></i><span>Heartbeat</span></button>
+                                    <button class="preset-btn" data-animation="wobble"><i
+                                            class="fas fa-random"></i><span>Wobble</span></button>
+                                    <button class="preset-btn" data-animation="roll"><i
+                                            class="fas fa-circle-notch"></i><span>Roll</span></button>
+                                    <button class="preset-btn" data-animation="flip"><i
+                                            class="fas fa-retweet"></i><span>Flip</span></button>
+                                    <button class="preset-btn" data-animation="grow"><i
+                                            class="fas fa-expand-alt"></i><span>Grow</span></button>
+                                    <button class="preset-btn" data-animation="shrink"><i
+                                            class="fas fa-compress-alt"></i><span>Shrink</span></button>
+                                    <button class="preset-btn" data-animation="levitate"><i
+                                            class="fas fa-arrow-up"></i><span>Levitate</span></button>
+                                </div>
+                            </div>
+                            <!-- Special Category -->
+                            <div class="category-content" data-category="special">
+                                <div class="preset-grid">
+                                    <button class="preset-btn" data-animation="fly"><i
+                                            class="fas fa-plane"></i><span>Fly</span></button>
+                                    <button class="preset-btn" data-animation="spiral"><i
+                                            class="fas fa-compact-disc"></i><span>Spiral</span></button>
+                                    <button class="preset-btn" data-animation="orbit"><i
+                                            class="fas fa-globe"></i><span>Orbit</span></button>
+                                    <button class="preset-btn" data-animation="tornado"><i
+                                            class="fas fa-wind"></i><span>Tornado</span></button>
+                                    <button class="preset-btn" data-animation="zigzag"><i
+                                            class="fas fa-bolt"></i><span>Zigzag</span></button>
+                                    <button class="preset-btn" data-animation="pendulum"><i
+                                            class="fas fa-clock"></i><span>Pendulum</span></button>
+                                    <button class="preset-btn" data-animation="earthquake"><i
+                                            class="fas fa-mountain"></i><span>Quake</span></button>
+                                    <button class="preset-btn" data-animation="crazy"><i
+                                            class="fas fa-dizzy"></i><span>Crazy</span></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Speed Control -->
+                        <div class="controls-group">
+                            <label>Speed</label>
+                            <div class="slider-container">
+                                <input type="range" id="speed-slider" min="0.1" max="3" step="0.1" value="1">
+                                <span id="speed-value">1.0x</span>
+                            </div>
+                        </div>
+
+                        <!-- Playback Controls -->
+                        <div class="playback-controls">
+                            <button id="btn-play" class="playback-btn active"><i class="fas fa-play"></i></button>
+                            <button id="btn-pause" class="playback-btn"><i class="fas fa-pause"></i></button>
+                            <button id="btn-stop" class="playback-btn"><i class="fas fa-stop"></i></button>
+                        </div>
+
+                        <!-- Active Animation -->
+                        <div id="active-animation" class="active-animation hidden">
+                            <span class="animation-badge">
+                                <i class="fas fa-bolt"></i>
+                                <span id="current-animation-name">rotate</span>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Export Section -->
+                <section class="panel export-panel">
+                    <div class="panel-header">
+                        <i class="fas fa-video"></i>
+                        <h3>Export Video</h3>
+                    </div>
+                    <div class="panel-content">
+                        <div class="controls-group">
+                            <label>Duration</label>
+                            <div class="slider-container">
+                                <input type="range" id="duration-slider" min="3" max="30" step="1" value="5">
+                                <span id="duration-value">5s</span>
+                            </div>
+                        </div>
+                        <button id="btn-record" class="btn-record">
+                            <i class="fas fa-circle"></i>
+                            <span>Record Video</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Scene Settings -->
+                <section class="panel settings-panel">
+                    <div class="panel-header collapsed" id="settings-header">
+                        <i class="fas fa-cog"></i>
+                        <h3>Scene Settings</h3>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="panel-content settings-content hidden" id="settings-content">
+                        <div class="controls-group">
+                            <label>Background</label>
+                            <div class="color-options">
+                                <button class="color-btn active" data-color="#0a0a0f"
+                                    style="background:#0a0a0f;"></button>
+                                <button class="color-btn" data-color="#1a1a2e" style="background:#1a1a2e;"></button>
+                                <button class="color-btn" data-color="#16213e" style="background:#16213e;"></button>
+                                <button class="color-btn" data-color="#1f4068" style="background:#1f4068;"></button>
+                                <button class="color-btn" data-color="#2d3436" style="background:#2d3436;"></button>
+                            </div>
+                        </div>
+                        <div class="controls-group">
+                            <label>Lighting</label>
+                            <div class="slider-container">
+                                <input type="range" id="light-slider" min="0.1" max="2" step="0.1" value="1">
+                                <span id="light-value">1.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+        </main>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

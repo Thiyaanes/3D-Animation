@@ -1,0 +1,142 @@
+/* ===== SCROLLING FIX ===== */
+.sidebar {
+    height: calc(100vh - 70px) !important;
+    max-height: calc(100vh - 70px) !important;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    display: block !important;
+    padding-bottom: 80px !important;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #12121a;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #6366f1;
+    border-radius: 4px;
+}
+
+.panel {
+    margin-bottom: 16px !important;
+}
+
+.main-content {
+    height: calc(100vh - 70px) !important;
+    overflow: hidden !important;
+}
+
+/* ===== DROP ZONE FIX ===== */
+.drop-zone {
+    cursor: pointer !important;
+    display: block !important;
+}
+
+.drop-zone-content {
+    pointer-events: none !important;
+}
+
+/* ===== ANIMATION CATEGORIES ===== */
+.animation-categories {
+    margin-bottom: 16px;
+}
+
+.animation-categories label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #a0a0b0;
+    margin-bottom: 8px;
+}
+
+.category-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.category-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: transparent;
+    color: #a0a0b0;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.category-tab i {
+    font-size: 16px;
+}
+
+.category-tab:hover {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+    color: #fff;
+}
+
+.category-tab.active {
+    border-color: #6366f1;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+    color: #fff;
+}
+
+/* Animation Buttons Container */
+.animation-buttons {
+    margin-bottom: 16px;
+}
+
+.category-content {
+    display: none;
+}
+
+.category-content.active {
+    display: block;
+}
+
+.preset-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.preset-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: rgba(20, 20, 30, 0.5);
+    color: #a0a0b0;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-btn i {
+    font-size: 18px;
+}
+
+.preset-btn:hover {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.15);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.preset-btn.active {
+    border-color: #6366f1;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+}

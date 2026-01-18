@@ -42,7 +42,13 @@ models_db = {}
 
 @app.get("/")
 async def root():
-    """Root endpoint - returns API info"""
+    """Root endpoint - serves the frontend"""
+    return FileResponse("index.html")
+
+
+@app.get("/api")
+async def api_info():
+    """API info endpoint"""
     return {
         "message": "3D Animation Agent API",
         "version": "1.0.0",

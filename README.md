@@ -4,6 +4,8 @@ Upload 3D models and animate them with text prompts!!
 
 ##  Quick Start
 
+for using it in your own ide
+
 1. Start the server:
 ```bash
 npx serve . -p 3000
@@ -49,4 +51,3 @@ finaldesnek/
 - Pure HTML/CSS/JS 
 
 ---
-Made with Three.js | Runs in Browser

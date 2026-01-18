@@ -51,3 +51,7 @@ finaldesnek/
 - Pure HTML/CSS/JS 
 
 ---
+
+link for web : https://threed-animation-erym.onrender.com
+
+it takes some time to load probably 20 sec to start on render
